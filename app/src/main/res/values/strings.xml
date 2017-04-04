@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">微博</string>
+    <string name="second_activity">第二个Activity</string>
+    <string name="button">Button</string>
+</resources>

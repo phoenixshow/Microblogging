@@ -4,4 +4,14 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <integer name="duration_anim">300</integer>
+
+
+    <dimen name="space_s">8dip</dimen>
+    <dimen name="space_m">16dip</dimen>
+
+    <dimen name="txt_m">16sp</dimen>
+
+    <dimen name="corner_common">4dp</dimen>
+
+    <dimen name="height_divider">1px</dimen>
 </resources>

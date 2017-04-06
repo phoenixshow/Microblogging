@@ -4,25 +4,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
+    <!--
     <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:id="@+id/toolbar"
+        />
+    -->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:id="@+id/toolbar"
+        android:id="@+id/toolbar_rl"
         >
-        <RelativeLayout
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:id="@+id/custom_rl"
-            >
-
-        </RelativeLayout>
-    </android.support.v7.widget.Toolbar>
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/bg"
-        android:id="@+id/content_rl"
-        />
+            android:layout_centerInParent="true"
+            android:text="@string/empty_string"
+            android:textSize="16sp"
+            android:id="@+id/title_tv"
+            />
+    </RelativeLayout>
 </LinearLayout>

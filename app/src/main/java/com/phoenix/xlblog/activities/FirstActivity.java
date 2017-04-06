@@ -8,48 +8,38 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.RadioGroup;
 
 import com.phoenix.xlblog.R;
+import com.phoenix.xlblog.views.ToolbarX;
 
 /**
  * Created by flashing on 2017/4/4.
  */
 
-//public class FirstActivity extends BaseActivity {
-public class FirstActivity extends AppCompatActivity {
-    private Toolbar toolbar;
-
-    private void assignViews() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-    }
+public class FirstActivity extends BaseActivity {
+    private ToolbarX mToolbarX;
+    private RadioGroup custom_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_first);
-        assignViews();
+        initialize();
+        getToolbar().setDisplayHomeAsUpEnabled(true)
+                .setNavigationOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
-        toolbar.setTitle(R.string.title_first);
-        toolbar.setSubtitle(R.string.title_sub_first);
-        toolbar.setNavigationIcon(R.mipmap.ic_launcher);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("TAG", "setNavigationOnClickListener");
-            }
-        });
-//        toolbar.inflateMenu(R.menu.menu_main);
-//        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(MenuItem item) {
-//                Log.e("TAG", "setOnMenuItemClickListener"+item.getItemId());
-//                return true;
-//            }
-//        });
-        setSupportActionBar(toolbar);//将Toolbar设置为ActionBar
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);//隐藏导航
-//        getSupportActionBar().setDisplayShowTitleEnabled(false);//隐藏标题、子标题
-        getSupportActionBar().setTitle("SetTitleAfterSupportActionBar");//在setSupportActionBar之后可以设置标题
+                    }
+                })
+                .setCustomView(custom_view)
+                .setTitle("ToolbarX")
+                .setSubTitle("XSub");
+    }
+
+    private void initialize() {
+        custom_view = (RadioGroup) getLayoutInflater().inflate(R.layout.view_custom, null);
     }
 
     @Override
@@ -64,10 +54,10 @@ public class FirstActivity extends AppCompatActivity {
         return true;
     }
 
-    //    @Override
-//    public int getLayoutId() {
-//        return R.layout.activity_first;
-//    }
+    @Override
+    public int getLayoutId() {
+        return R.layout.activity_first;
+    }
 
     public void startActivity(View view) {
         startActivity(new Intent(FirstActivity.this, SecondActivity.class));

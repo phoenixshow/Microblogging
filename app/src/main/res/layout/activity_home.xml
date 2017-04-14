@@ -35,6 +35,7 @@
             android:textSize="@dimen/txt_m"
             android:text="@string/home"
             android:drawableTop="@drawable/bg_tabbar_home_selector"
+            android:checked="true"
             android:id="@+id/home_rb"
             />
         <RadioButton

@@ -74,4 +74,9 @@ public class ToolbarX {
         mCustomRl.addView(view);
         return this;
     }
+
+    public ToolbarX hide(){
+        mActionBar.hide();
+        return this;
+    }
 }

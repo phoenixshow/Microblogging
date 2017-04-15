@@ -16,7 +16,11 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.phoenix.xlblog.R;
 import com.phoenix.xlblog.constant.Constants;
+import com.phoenix.xlblog.entities.HttpResponse;
 import com.phoenix.xlblog.entities.Status;
+import com.phoenix.xlblog.networks.BaseNetwork;
+import com.phoenix.xlblog.networks.Urls;
+import com.phoenix.xlblog.utils.LogUtils;
 import com.phoenix.xlblog.utils.SPUtils;
 import com.sina.weibo.sdk.constant.WBConstants;
 import com.sina.weibo.sdk.exception.WeiboException;
@@ -28,47 +32,42 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.R.id.list;
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
 
 public class HomeFragment extends BaseFragment {
-    private String url = "https://api.weibo.com/2/statuses/public_timeline.json";
-    private AsyncWeiboRunner mAsyncWeiboRunner;
     private WeiboParameters mParameters;
-    //(“GET”, “POST”, “DELETE”)
-    private String httpMethod;
     private SPUtils mSPUtils;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAsyncWeiboRunner = new AsyncWeiboRunner(getActivity());
         mParameters = new WeiboParameters(Constants.APP_KEY);
-        httpMethod = "GET";
         mSPUtils = SPUtils.getInstance(getActivity().getApplicationContext());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        mParameters.put(WBConstants.AUTH_ACCESS_TOKEN, mSPUtils.getToken().getToken());
-        mAsyncWeiboRunner.requestAsync(url, mParameters, httpMethod, new RequestListener() {
+        new BaseNetwork(getActivity(), Urls.HOME_TIME_LINE) {
             @Override
-            public void onComplete(String s) {
-                Log.e("TAG", "onComplete------>s="+s);
-                JsonParser parser = new JsonParser();
-                JsonObject object = parser.parse(s).getAsJsonObject();
-                JsonArray array = object.get("statuses").getAsJsonArray();
-                List<Status> list = new ArrayList<Status>();
-                Type type = new TypeToken<ArrayList<Status>>(){}.getType();
-                list = new Gson().fromJson(array, type);
-                Log.e("TAG", "---------->"+list.size());
+            public WeiboParameters onPrepare() {
+                mParameters.put(WBConstants.AUTH_ACCESS_TOKEN, mSPUtils.getToken().getToken());
+                return mParameters;
             }
 
             @Override
-            public void onWeiboException(WeiboException e) {
-
+            public void onFinish(HttpResponse response, boolean success) {
+                if (success){
+                    LogUtils.e(response.response);
+                    List<Status> list = new ArrayList<Status>();
+                    Type type = new TypeToken<ArrayList<Status>>(){}.getType();
+                    list = new Gson().fromJson(response.response, type);
+                }else {
+                    LogUtils.e("onFinish---------->Failure："+response.message);
+                }
             }
-        });
+        }.get();
         return view;
     }
 }

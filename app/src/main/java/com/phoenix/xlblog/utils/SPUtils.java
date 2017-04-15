@@ -3,6 +3,7 @@ package com.phoenix.xlblog.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
@@ -37,6 +38,14 @@ public class SPUtils {
     public void saveToken(Oauth2AccessToken accessToken){
         mEditor.putString(ACCESS_TOKEN, new Gson().toJson(accessToken)).commit();
         mEditor.putBoolean(IS_LOGIN, true).commit();
+    }
+
+    public Oauth2AccessToken getToken(){
+        String json = mSharedPreferences.getString(ACCESS_TOKEN, "");
+        if (TextUtils.isEmpty(json)){
+            return null;
+        }
+        return new Gson().fromJson(json, Oauth2AccessToken.class);
     }
 
     public boolean isLogin(){

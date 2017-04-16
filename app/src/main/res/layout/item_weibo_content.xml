@@ -3,12 +3,12 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
     >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:background="@color/white"
         android:padding="@dimen/space_s"
         >
         <ImageView
@@ -60,7 +60,16 @@
         android:text="@string/empty_string"
         android:background="@color/white"
         style="@style/tv_m_yellow_sl"
+        android:singleLine="false"
         android:id="@+id/content_tv"
+        />
+    <ImageView
+        android:layout_width="@dimen/avatar_size_xxl"
+        android:layout_height="@dimen/avatar_size_xxl"
+        android:layout_margin="@dimen/space_m"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/ic_place_holder"
+        android:id="@+id/content_iv"
         />
     <LinearLayout
         android:layout_width="match_parent"
@@ -75,7 +84,16 @@
             android:padding="@dimen/space_s"
             android:text="@string/empty_string"
             style="@style/tv_m_yellow_sl"
+            android:singleLine="false"
             android:id="@+id/recontent_tv"
+            />
+        <ImageView
+            android:layout_width="@dimen/avatar_size_xxl"
+            android:layout_height="@dimen/avatar_size_xxl"
+            android:layout_margin="@dimen/space_m"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/ic_place_holder"
+            android:id="@+id/recontent_iv"
             />
     </LinearLayout>
 </LinearLayout>

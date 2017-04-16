@@ -47,6 +47,9 @@ public class HomeListAdapter extends RecyclerView.Adapter<HomeListAdapter.HomeVi
         holder.usernameTv.setText(entity.user.screen_name);
         holder.timeTv.setText(TimeFormatUtils.parseToYYMMDD(entity.created_at));
         holder.contentTv.setText(entity.text);
+        holder.commentTv.setText(String.valueOf(entity.comments_count));
+        holder.likeTv.setText(String.valueOf(entity.attitudes_count));
+        holder.retweenTv.setText(String.valueOf(entity.reposts_count));
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N){
             // flags
             // FROM_HTML_MODE_COMPACT：html块元素之间使用一个换行符分隔
@@ -115,6 +118,9 @@ public class HomeListAdapter extends RecyclerView.Adapter<HomeListAdapter.HomeVi
         private LinearLayout reLl;
         private TextView recontentTv;
         private ImageView recontentIv;
+        private TextView commentTv;
+        private TextView likeTv;
+        private TextView retweenTv;
 
         public HomeViewHolder(View itemView) {
             super(itemView);
@@ -139,6 +145,9 @@ public class HomeListAdapter extends RecyclerView.Adapter<HomeListAdapter.HomeVi
             reLl = (LinearLayout) v.findViewById(R.id.re_ll);
             recontentTv = (TextView) v.findViewById(R.id.recontent_tv);
             recontentIv = (ImageView) v.findViewById(R.id.recontent_iv);
+            commentTv = (TextView) v.findViewById(R.id.comment_tv);
+            likeTv = (TextView) v.findViewById(R.id.like_tv);
+            retweenTv = (TextView) v.findViewById(R.id.retweet_tv);
         }
     }
 

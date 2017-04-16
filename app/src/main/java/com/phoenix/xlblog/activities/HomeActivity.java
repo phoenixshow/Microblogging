@@ -71,7 +71,7 @@ public class HomeActivity extends BaseActivity {
 
     @Override
     public int getLayoutId() {
-        return R.layout.activity_home;
+        return R.layout.ac_home;
     }
 
     @Override

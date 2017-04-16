@@ -71,7 +71,7 @@ public class LandingActivity extends BaseActivity {
 
     @Override
     public int getLayoutId() {
-        return R.layout.activity_landing;
+        return R.layout.ac_landing;
     }
 
     @Override

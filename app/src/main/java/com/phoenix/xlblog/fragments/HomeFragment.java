@@ -53,7 +53,7 @@ public class HomeFragment extends BaseFragment {
             public WeiboParameters onPrepare() {
                 mParameters.put(WBConstants.AUTH_ACCESS_TOKEN, mSPUtils.getToken().getToken());
                 mParameters.put(Constants.PAGE, 1);
-                mParameters.put(Constants.COUNT, 10);
+                mParameters.put(Constants.COUNT, 50);
                 return mParameters;
             }
 

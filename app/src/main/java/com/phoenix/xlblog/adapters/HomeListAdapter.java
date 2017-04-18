@@ -3,6 +3,7 @@ package com.phoenix.xlblog.adapters;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.phoenix.xlblog.R;
 import com.phoenix.xlblog.entities.PicUrls;
 import com.phoenix.xlblog.entities.Status;
 import com.phoenix.xlblog.utils.CircleTransform;
+import com.phoenix.xlblog.utils.RichTextUtils;
 import com.phoenix.xlblog.utils.TimeFormatUtils;
 
 import java.util.List;
@@ -46,7 +48,8 @@ public class HomeListAdapter extends RecyclerView.Adapter<HomeListAdapter.HomeVi
         Status entity = mData.get(position);
         holder.usernameTv.setText(entity.user.screen_name);
         holder.timeTv.setText(TimeFormatUtils.parseToYYMMDD(entity.created_at));
-        holder.contentTv.setText(entity.text);
+        holder.contentTv.setText(RichTextUtils.getRichText(mContext, entity.text));
+        holder.contentTv.setMovementMethod(LinkMovementMethod.getInstance());//激活链接
         holder.commentTv.setText(String.valueOf(entity.comments_count));
         holder.likeTv.setText(String.valueOf(entity.attitudes_count));
         holder.retweenTv.setText(String.valueOf(entity.reposts_count));
@@ -82,7 +85,9 @@ public class HomeListAdapter extends RecyclerView.Adapter<HomeListAdapter.HomeVi
 
         if (null != reStatus){//如果不是转发的，是自己发的微博就会为空
             holder.reLl.setVisibility(View.VISIBLE);
-            holder.recontentTv.setText(reStatus.text);
+            String reContent = "@"+reStatus.user.screen_name+":"+reStatus.text;
+            holder.recontentTv.setText(RichTextUtils.getRichText(mContext, reContent));
+            holder.recontentTv.setMovementMethod(LinkMovementMethod.getInstance());//激活链接
 
             List<PicUrls> rePics = reStatus.pic_urls;
             if (null != rePics && rePics.size() > 0){

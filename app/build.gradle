@@ -32,4 +32,5 @@ dependencies {
     compile files('libs/weiboSDKCore_3.1.4.jar')
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'org.greenrobot:eventbus:3.0.0'
 }

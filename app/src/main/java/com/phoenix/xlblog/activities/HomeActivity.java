@@ -90,20 +90,6 @@ public class HomeActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-//        //用发送广播的方式给Fragment传递消息
-//        Intent intent = new Intent();
-//        intent.setAction("change");
-//        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-
-//        //用EventBus传递消息
-//        EventBus.getDefault().post("change");
-
-        /*//试验BACKGROUND与ASYNC的区别
-        for (int i = 0; i < 10; i++) {
-            EventBus.getDefault().post(i);
-        }*/
-
         EventBus.getDefault().post(item.getItemId());
         return true;
     }

@@ -15,6 +15,11 @@ public class Constants {
     public static final String SCOPE = "email,direct_messages_read,direct_messages_write,"
                     + "friendships_groups_read,friendships_groups_write,statuses_to_me_read,"
                     + "follow_app_official_microblog," + "invitation_write";
+
+    public static final String SOURCE = "source";
     public static final String PAGE = "page";
     public static final String COUNT = "count";
+    public static final String ID ="id";
+    public static final String STATUS ="status";
+    public static final String COMMENT ="comment";
 }

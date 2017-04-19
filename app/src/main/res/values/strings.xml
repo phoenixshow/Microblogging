@@ -12,4 +12,8 @@
     <string name="message">消息</string>
     <string name="home">首页</string>
     <string name="landing">长生鸟</string>
+    <string name="hint_please_input_content">请输入文本内容</string>
+    <string name="repost">转发</string>
+    <string name="comment">评论</string>
+    <string name="post">发送</string>
 </resources>

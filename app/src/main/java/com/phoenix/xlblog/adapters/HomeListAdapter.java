@@ -1,6 +1,7 @@
 package com.phoenix.xlblog.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -13,6 +14,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.phoenix.xlblog.R;
+import com.phoenix.xlblog.activities.RepostActivity;
+import com.phoenix.xlblog.constant.Constants;
 import com.phoenix.xlblog.entities.PicUrls;
 import com.phoenix.xlblog.entities.Status;
 import com.phoenix.xlblog.utils.CircleTransform;
@@ -45,14 +48,14 @@ public class HomeListAdapter extends RecyclerView.Adapter<HomeListAdapter.HomeVi
 
     @Override
     public void onBindViewHolder(HomeViewHolder holder, int position) {
-        Status entity = mData.get(position);
+        final Status entity = mData.get(position);
         holder.usernameTv.setText(entity.user.screen_name);
         holder.timeTv.setText(TimeFormatUtils.parseToYYMMDD(entity.created_at));
         holder.contentTv.setText(RichTextUtils.getRichText(mContext, entity.text));
         holder.contentTv.setMovementMethod(LinkMovementMethod.getInstance());//激活链接
-        holder.commentTv.setText(String.valueOf(entity.comments_count));
-        holder.likeTv.setText(String.valueOf(entity.attitudes_count));
-        holder.retweenTv.setText(String.valueOf(entity.reposts_count));
+        holder.commentTv.setText(String.valueOf(entity.comments_count));//评论
+        holder.likeTv.setText(String.valueOf(entity.attitudes_count));//赞
+        holder.retweenTv.setText(String.valueOf(entity.reposts_count));//转发
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N){
             // flags
             // FROM_HTML_MODE_COMPACT：html块元素之间使用一个换行符分隔
@@ -62,6 +65,26 @@ public class HomeListAdapter extends RecyclerView.Adapter<HomeListAdapter.HomeVi
         }else {
             holder.sourceTv.setText(Html.fromHtml(entity.source).toString());
         }
+
+        holder.retweenTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, RepostActivity.class);
+                intent.putExtra(Constants.ID, entity.id);
+                intent.putExtra(Constants.STATUS, entity.text);
+                intent.setAction("REPOST");
+                mContext.startActivity(intent);
+            }
+        });
+        holder.commentTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, RepostActivity.class);
+                intent.putExtra(Constants.ID, entity.id);
+                intent.setAction("COMMENT");
+                mContext.startActivity(intent);
+            }
+        });
 
         Status reStatus = entity.retweeted_status;
         Glide.with(mContext).load(entity.user.profile_image_url)

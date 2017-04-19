@@ -45,32 +45,24 @@ public class HomeFragment extends BaseFragment {
     private RecyclerView.ItemDecoration mItemDecoration;
     private List<Status> mStatusList;
     private HomeListAdapter mListAdapter;
+    private String url = Urls.HOME_TIME_LINE;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
 
         mParameters = new WeiboParameters(Constants.APP_KEY);
         mSPUtils = SPUtils.getInstance(getActivity().getApplicationContext());
         mStatusList = new ArrayList<>();
         mListAdapter = new HomeListAdapter(getActivity(), mStatusList);
-//        //注册广播接收者接收Activity传来的消息
-//        IntentFilter filter = new IntentFilter();
-//        filter.addAction("change");
-//        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(new BroadcastReceiver() {
-//            @Override
-//            public void onReceive(Context context, Intent intent) {
-//                LogUtils.e("--------->onReceive");
-//                loadData(Urls.USER_TIME_LINE);
-//            }
-//        }, filter);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rv = (RecyclerView) inflater.inflate(R.layout.v_common_recyclerview, container, false);
         init();
-        loadData(Urls.HOME_TIME_LINE);
+        loadData(url);
         return rv;
     }
 
@@ -79,6 +71,7 @@ public class HomeFragment extends BaseFragment {
             @Override
             public WeiboParameters onPrepare() {
                 mParameters.put(WBConstants.AUTH_ACCESS_TOKEN, mSPUtils.getToken().getToken());
+                mParameters.put(Constants.SOURCE, Constants.APP_KEY);
                 mParameters.put(Constants.PAGE, 1);
                 mParameters.put(Constants.COUNT, 10);
                 return mParameters;
@@ -118,65 +111,29 @@ public class HomeFragment extends BaseFragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
 
-    /*@Subscribe(threadMode = ThreadMode.POSTING)
-    public void onMessageEvent(String string) {
-        if ("change".equals(string)){
-            loadData(Urls.USER_TIME_LINE);
-        }
-    }*/
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(Integer event) {
-        switch (event){
-            case R.id.action_home:
-                loadData(Urls.HOME_TIME_LINE);
-                break;
-            case R.id.action_profile:
-                loadData(Urls.USER_TIME_LINE);
-                break;
+    public void onMessageEvent(Object event) {
+        if (event instanceof Integer) {
+            int id = (int) event;
+            switch (id) {
+                case R.id.action_home:
+                    url = Urls.HOME_TIME_LINE;
+                    break;
+                case R.id.action_profile:
+                    url = Urls.USER_TIME_LINE;
+                    break;
+            }
+            LogUtils.e("--------->event instanceof Integer");
+            loadData(url);
+        }
+        if (event instanceof String){
+            LogUtils.e("--------->event instanceof String");
+            loadData(url);
         }
     }
-/*//    @Subscribe(threadMode = ThreadMode.BACKGROUND)
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onMessageEvent(String string) {
-        if ("change".equals(string)){
-            mParameters.put(WBConstants.AUTH_ACCESS_TOKEN, mSPUtils.getToken().getToken());
-            mParameters.put(Constants.PAGE, 1);
-            mParameters.put(Constants.COUNT, 5);
-
-            //request方法是一个同步操作，不能放在主线程，所以放在独立线程中执行
-            String str = new AsyncWeiboRunner(getActivity()).request(Urls.USER_TIME_LINE, mParameters, "GET");
-//            LogUtils.e("ThreadMode.BACKGROUND--------->"+str);
-            LogUtils.e("ThreadMode.ASYNC--------->"+str);
-        }
-    }*/
-    /*//试验BACKGROUND与ASYNC的区别
-    @Subscribe(threadMode = ThreadMode.BACKGROUND)
-    public void onMessageEventBackground(Integer string) {
-        try {
-            Thread.sleep(5000);
-            LogUtils.e("ThreadMode.BACKGROUND--------->"+string);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    public void onMessageEventAsync(Integer string) {
-        try {
-            Thread.sleep(5000);
-            LogUtils.e("ThreadMode.ASYNC--------->"+string);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }*/
 }

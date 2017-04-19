@@ -27,6 +27,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.HomeActivity"/>
+        <activity android:name=".activities.RepostActivity"/>
         <!--
         <activity android:name=".activities.HomeActivity">
             <intent-filter>

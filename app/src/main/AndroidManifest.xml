@@ -28,6 +28,7 @@
         </activity>
         <activity android:name=".activities.HomeActivity"/>
         <activity android:name=".activities.RepostActivity"/>
+        <activity android:name=".activities.PhotoViewActivity" android:theme="@style/AppTheme.NoActionBar.FullScreen"/>
         <!--
         <activity android:name=".activities.HomeActivity">
             <intent-filter>

@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.phoenix.xlblog.R;
+import com.phoenix.xlblog.activities.PhotoViewActivity;
 import com.phoenix.xlblog.activities.RepostActivity;
 import com.phoenix.xlblog.constant.Constants;
 import com.phoenix.xlblog.entities.PicUrls;
@@ -95,13 +96,21 @@ public class HomeListAdapter extends RecyclerView.Adapter<HomeListAdapter.HomeVi
 
         List<PicUrls> pics = entity.pic_urls;
         if (null != pics && pics.size() > 0){
-            PicUrls pic = pics.get(0);
+            final PicUrls pic = pics.get(0);
             //微博传来的图片默认有三种尺寸，thumbnail_pic是最小的，bmiddle_pic是中等大小，original_pic是原始图片，
             pic.original_pic = pic.thumbnail_pic.replace("thumbnail", "large");
             pic.bmiddle_pic = pic.thumbnail_pic.replace("thumbnail", "bmiddle");
             holder.contentIv.setVisibility(View.VISIBLE);
             //默认的加载方式就是GIF，所以不用再调用.asGif()方法了
             Glide.with(mContext).load(pic.bmiddle_pic).into(holder.contentIv);
+            holder.contentIv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, PhotoViewActivity.class);
+                    intent.putExtra(PicUrls.class.getSimpleName(), pic);
+                    mContext.startActivity(intent);
+                }
+            });
         }else {
             holder.contentIv.setVisibility(View.GONE);
         }
@@ -114,11 +123,19 @@ public class HomeListAdapter extends RecyclerView.Adapter<HomeListAdapter.HomeVi
 
             List<PicUrls> rePics = reStatus.pic_urls;
             if (null != rePics && rePics.size() > 0){
-                PicUrls pic = rePics.get(0);
+                final PicUrls pic = rePics.get(0);
                 pic.original_pic = pic.thumbnail_pic.replace("thumbnail", "large");
                 pic.bmiddle_pic = pic.thumbnail_pic.replace("thumbnail", "bmiddle");
                 holder.recontentIv.setVisibility(View.VISIBLE);
                 Glide.with(mContext).load(pic.bmiddle_pic).into(holder.recontentIv);
+                holder.recontentIv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(mContext, PhotoViewActivity.class);
+                        intent.putExtra(PicUrls.class.getSimpleName(), pic);
+                        mContext.startActivity(intent);
+                    }
+                });
             }else {
                 holder.recontentIv.setVisibility(View.GONE);
             }

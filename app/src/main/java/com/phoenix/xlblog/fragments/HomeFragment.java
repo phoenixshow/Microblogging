@@ -1,9 +1,11 @@
 package com.phoenix.xlblog.fragments;
 
+import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.phoenix.xlblog.R;
 import com.phoenix.xlblog.adapters.HomeListAdapter;
 import com.phoenix.xlblog.constant.Constants;
@@ -25,6 +28,7 @@ import com.phoenix.xlblog.networks.Urls;
 import com.phoenix.xlblog.utils.DividerItemDecoration;
 import com.phoenix.xlblog.utils.LogUtils;
 import com.phoenix.xlblog.utils.SPUtils;
+import com.phoenix.xlblog.views.PullToRefreshRecyclerView;
 import com.sina.weibo.sdk.constant.WBConstants;
 import com.sina.weibo.sdk.net.AsyncWeiboRunner;
 import com.sina.weibo.sdk.net.WeiboParameters;
@@ -40,12 +44,13 @@ import java.util.List;
 public class HomeFragment extends BaseFragment {
     private WeiboParameters mParameters;
     private SPUtils mSPUtils;
-    private RecyclerView rv;
+    private PullToRefreshRecyclerView rv;
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView.ItemDecoration mItemDecoration;
     private List<Status> mStatusList;
     private HomeListAdapter mListAdapter;
     private String url = Urls.HOME_TIME_LINE;
+    private int page = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,20 +65,20 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rv = (RecyclerView) inflater.inflate(R.layout.v_common_recyclerview, container, false);
+        rv = (PullToRefreshRecyclerView) inflater.inflate(R.layout.v_common_recyclerview, container, false);
         init();
-        loadData(url);
+        loadData(url, false);
         return rv;
     }
 
-    private void loadData(String url) {
+    private void loadData(String url, final boolean loadMore) {
         new BaseNetwork(getActivity(), url) {
             @Override
             public WeiboParameters onPrepare() {
                 mParameters.put(WBConstants.AUTH_ACCESS_TOKEN, mSPUtils.getToken().getToken());
                 mParameters.put(Constants.SOURCE, Constants.APP_KEY);
-                mParameters.put(Constants.PAGE, 1);
-                mParameters.put(Constants.COUNT, 10);
+                mParameters.put(Constants.PAGE, page);
+                mParameters.put(Constants.COUNT, 2);//10
                 return mParameters;
             }
 
@@ -85,10 +90,13 @@ public class HomeFragment extends BaseFragment {
                     Type type = new TypeToken<ArrayList<Status>>(){}.getType();
                     list = new Gson().fromJson(response.response, type);
                     if (null != list && list.size() > 0){
-                        mStatusList.clear();
+                        if (!loadMore) {
+                            mStatusList.clear();
+                        }
                         mStatusList.addAll(list);
                     }
                     mListAdapter.notifyDataSetChanged();
+                    rv.onRefreshComplete();
                 }else {
                     LogUtils.e("onFinish---------->Failure："+response.message);
                 }
@@ -96,12 +104,33 @@ public class HomeFragment extends BaseFragment {
         }.get();
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     private void init() {
         mLayoutManager = new LinearLayoutManager(getActivity());
-        rv.setLayoutManager(mLayoutManager);
+        rv.getRefreshableView().setLayoutManager(mLayoutManager);
         mItemDecoration = new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL);
-        rv.addItemDecoration(mItemDecoration);
-        rv.setAdapter(mListAdapter);
+        rv.getRefreshableView().addItemDecoration(mItemDecoration);
+        rv.getRefreshableView().setAdapter(mListAdapter);
+        rv.setMode(PullToRefreshBase.Mode.BOTH);
+//        rv.getRefreshableView().setOnScrollChangeListener(new View.OnScrollChangeListener(){
+//            @Override
+//            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+//                LogUtils.e(rv.getRefreshableView().getChildCount()+"");
+//            }
+//        });
+        rv.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<RecyclerView>() {
+            @Override
+            public void onPullDownToRefresh(PullToRefreshBase<RecyclerView> refreshView) {
+                page = 1;
+                loadData(url, false);
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<RecyclerView> refreshView) {
+                page++;
+                loadData(url, true);
+            }
+        });
         mListAdapter.setOnItemClickListener(new HomeListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
@@ -129,11 +158,11 @@ public class HomeFragment extends BaseFragment {
                     break;
             }
             LogUtils.e("--------->event instanceof Integer");
-            loadData(url);
+            loadData(url, false);
         }
         if (event instanceof String){
             LogUtils.e("--------->event instanceof String");
-            loadData(url);
+            loadData(url, false);
         }
     }
 }

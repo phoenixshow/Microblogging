@@ -7,3 +7,18 @@
 /build
 /captures
 .externalNativeBuild
+import-summary.txt
+
+# Generated files
+bin/
+gen/
+out/
+
+# Gradle files
+.gradle/
+.idea/
+build/
+app/build/
+Spannable/build/
+ScreenCoordinate/build/
+PullToRefresh/build/

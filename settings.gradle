@@ -1,2 +1,2 @@
-include ':app', ':SpannableDemo', ':ScreenCoordinate'
+include ':app', ':SpannableDemo', ':ScreenCoordinate', ':MVCDemo'
 include ':PullToRefresh'

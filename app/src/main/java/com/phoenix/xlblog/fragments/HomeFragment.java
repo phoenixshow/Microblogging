@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -25,10 +26,13 @@ import com.phoenix.xlblog.entities.HttpResponse;
 import com.phoenix.xlblog.entities.Status;
 import com.phoenix.xlblog.networks.BaseNetwork;
 import com.phoenix.xlblog.networks.Urls;
+import com.phoenix.xlblog.presenter.HomePresenter;
+import com.phoenix.xlblog.presenter.HomePresenterImp;
 import com.phoenix.xlblog.utils.DividerItemDecoration;
 import com.phoenix.xlblog.utils.LogUtils;
 import com.phoenix.xlblog.utils.SPUtils;
 import com.phoenix.xlblog.views.PullToRefreshRecyclerView;
+import com.phoenix.xlblog.views.mvpviews.HomeView;
 import com.sina.weibo.sdk.constant.WBConstants;
 import com.sina.weibo.sdk.net.AsyncWeiboRunner;
 import com.sina.weibo.sdk.net.WeiboParameters;
@@ -41,24 +45,19 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends BaseFragment {
-    private WeiboParameters mParameters;
-    private SPUtils mSPUtils;
+public class HomeFragment extends BaseFragment implements HomeView{
     private PullToRefreshRecyclerView rv;
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView.ItemDecoration mItemDecoration;
-    private List<Status> mStatusList;
+    private HomePresenter mPresenter;
     private HomeListAdapter mListAdapter;
-    private String url = Urls.HOME_TIME_LINE;
-    private int page = 1;
+    private List<Status> mStatusList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
-
-        mParameters = new WeiboParameters(Constants.APP_KEY);
-        mSPUtils = SPUtils.getInstance(getActivity().getApplicationContext());
+        mPresenter = new HomePresenterImp(this);
         mStatusList = new ArrayList<>();
         mListAdapter = new HomeListAdapter(getActivity(), mStatusList);
     }
@@ -67,41 +66,8 @@ public class HomeFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rv = (PullToRefreshRecyclerView) inflater.inflate(R.layout.v_common_recyclerview, container, false);
         init();
-        loadData(url, false);
+        mPresenter.loadData();
         return rv;
-    }
-
-    private void loadData(String url, final boolean loadMore) {
-        new BaseNetwork(getActivity(), url) {
-            @Override
-            public WeiboParameters onPrepare() {
-                mParameters.put(WBConstants.AUTH_ACCESS_TOKEN, mSPUtils.getToken().getToken());
-                mParameters.put(Constants.SOURCE, Constants.APP_KEY);
-                mParameters.put(Constants.PAGE, page);
-                mParameters.put(Constants.COUNT, 2);//10
-                return mParameters;
-            }
-
-            @Override
-            public void onFinish(HttpResponse response, boolean success) {
-                if (success){
-                    LogUtils.e(response.response);
-                    List<Status> list = new ArrayList<Status>();
-                    Type type = new TypeToken<ArrayList<Status>>(){}.getType();
-                    list = new Gson().fromJson(response.response, type);
-                    if (null != list && list.size() > 0){
-                        if (!loadMore) {
-                            mStatusList.clear();
-                        }
-                        mStatusList.addAll(list);
-                    }
-                    mListAdapter.notifyDataSetChanged();
-                    rv.onRefreshComplete();
-                }else {
-                    LogUtils.e("onFinish---------->Failure："+response.message);
-                }
-            }
-        }.get();
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -110,33 +76,26 @@ public class HomeFragment extends BaseFragment {
         rv.getRefreshableView().setLayoutManager(mLayoutManager);
         mItemDecoration = new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL);
         rv.getRefreshableView().addItemDecoration(mItemDecoration);
+//        rv.getRefreshableView().setAdapter(mPresenter.getAdapter());
         rv.getRefreshableView().setAdapter(mListAdapter);
         rv.setMode(PullToRefreshBase.Mode.BOTH);
-//        rv.getRefreshableView().setOnScrollChangeListener(new View.OnScrollChangeListener(){
-//            @Override
-//            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-//                LogUtils.e(rv.getRefreshableView().getChildCount()+"");
-//            }
-//        });
         rv.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<RecyclerView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<RecyclerView> refreshView) {
-                page = 1;
-                loadData(url, false);
+                mPresenter.loadData();
             }
 
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<RecyclerView> refreshView) {
-                page++;
-                loadData(url, true);
+                mPresenter.loadMore();
             }
         });
-        mListAdapter.setOnItemClickListener(new HomeListAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View v, int position) {
-                LogUtils.e("position---------->"+position);
-            }
-        });
+//        mListAdapter.setOnItemClickListener(new HomeListAdapter.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(View v, int position) {
+//                LogUtils.e("position---------->"+position);
+//            }
+//        });
     }
 
     @Override
@@ -151,18 +110,28 @@ public class HomeFragment extends BaseFragment {
             int id = (int) event;
             switch (id) {
                 case R.id.action_home:
-                    url = Urls.HOME_TIME_LINE;
+                    mPresenter.requestHomeTimeLine();
                     break;
                 case R.id.action_profile:
-                    url = Urls.USER_TIME_LINE;
+                    mPresenter.requestUserTimeLine();
                     break;
             }
-            LogUtils.e("--------->event instanceof Integer");
-            loadData(url, false);
         }
-        if (event instanceof String){
-            LogUtils.e("--------->event instanceof String");
-            loadData(url, false);
+    }
+
+    @Override
+    public void onSuccess(List<Status> list) {
+        rv.onRefreshComplete();
+        if (list != null && list.size() > 0) {
+            mStatusList.clear();
+            mStatusList.addAll(list);
+            mListAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void onError(String error) {
+        rv.onRefreshComplete();
+        Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
     }
 }

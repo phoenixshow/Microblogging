@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.phoenix.xlblog.R;
+import com.phoenix.xlblog.activities.ArticleCommentActivity;
 import com.phoenix.xlblog.adapters.HomeListAdapter;
 import com.phoenix.xlblog.constant.Constants;
 import com.phoenix.xlblog.entities.HttpResponse;
@@ -90,12 +91,14 @@ public class HomeFragment extends BaseFragment implements HomeView{
                 mPresenter.loadMore();
             }
         });
-//        mListAdapter.setOnItemClickListener(new HomeListAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(View v, int position) {
-//                LogUtils.e("position---------->"+position);
-//            }
-//        });
+        mListAdapter.setOnItemClickListener(new HomeListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                Intent intent = new Intent(getActivity(), ArticleCommentActivity.class);
+                intent.putExtra(Status.class.getSimpleName(), mStatusList.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

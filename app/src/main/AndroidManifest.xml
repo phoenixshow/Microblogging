@@ -29,14 +29,7 @@
         <activity android:name=".activities.HomeActivity"/>
         <activity android:name=".activities.RepostActivity"/>
         <activity android:name=".activities.PhotoViewActivity" android:theme="@style/AppTheme.NoActionBar.FullScreen"/>
-        <!--
-        <activity android:name=".activities.HomeActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.simple"/>
-            </intent-filter>
-        </activity>
-        -->
+        <activity android:name=".activities.ArticleCommentActivity"/>
     </application>
 
 </manifest>

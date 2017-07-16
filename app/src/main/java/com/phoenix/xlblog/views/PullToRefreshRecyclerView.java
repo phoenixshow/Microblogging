@@ -75,4 +75,16 @@ public class PullToRefreshRecyclerView extends PullToRefreshBase<RecyclerView> {
         }
         return false;
     }
+
+    public void setLayoutManager(RecyclerView.LayoutManager manager){
+        mRefreshableView.setLayoutManager(manager);
+    }
+
+    public void addItemDecoration(RecyclerView.ItemDecoration itemDecoration){
+        mRefreshableView.addItemDecoration(itemDecoration);
+    }
+
+    public void setAdapter(RecyclerView.Adapter adapter){
+        mRefreshableView.setAdapter(adapter);
+    }
 }

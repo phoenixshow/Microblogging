@@ -1,10 +1,12 @@
 package com.phoenix.xlblog.constant;
 
+import com.sina.weibo.sdk.constant.WBConstants;
+
 /**
  * Created by flashing on 2017/4/14.
  */
 
-public class Constants {
+public class Constants extends WBConstants {
     // 应用的APP_KEY
     public static final String APP_KEY = "911840818";
     // 应用的SECRET_KEY

@@ -28,6 +28,16 @@
         <item name="android:textColor">@color/yellow</item>
         <item name="android:singleLine">true</item>
     </style>
+    <style name="tv_m_grey_sl">
+        <item name="android:textSize">@dimen/txt_m</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:singleLine">true</item>
+    </style>
+    <style name="tv_s_grey_sl">
+        <item name="android:textSize">@dimen/txt_s</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:singleLine">true</item>
+    </style>
 
     <style name="et_grey_hint_black_txt_bg_white">
         <item name="android:textSize">@dimen/txt_m</item>

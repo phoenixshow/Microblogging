@@ -1,8 +1,10 @@
 package com.phoenix.xlblog.activities;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -16,10 +18,10 @@ import com.phoenix.xlblog.entities.HttpResponse;
 import com.phoenix.xlblog.entities.Status;
 import com.phoenix.xlblog.networks.BaseNetwork;
 import com.phoenix.xlblog.networks.Urls;
-import com.phoenix.xlblog.utils.LogUtils;
 import com.phoenix.xlblog.utils.SPUtils;
 import com.phoenix.xlblog.views.PullToRefreshRecyclerView;
-import com.sina.weibo.sdk.constant.WBConstants;
+import com.phoenix.xlblog.views.mvpviews.ArticleCommentView;
+import com.phoenix.xlblog.views.mvpviews.BaseView;
 import com.sina.weibo.sdk.net.WeiboParameters;
 
 import java.lang.reflect.Type;
@@ -30,7 +32,7 @@ import java.util.List;
  * Created by flashing on 2017/7/16.
  */
 
-public class ArticleCommentActivity extends BaseActivity {
+public class ArticleCommentActivity extends BaseActivity implements ArticleCommentView{
     private Status mStatus;
     private PullToRefreshRecyclerView rv;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -85,5 +87,26 @@ public class ArticleCommentActivity extends BaseActivity {
     @Override
     public int getLayoutId() {
         return R.layout.v_common_recyclerview;
+    }
+
+    @Override
+    public Activity getActivity() {
+        return this;
+    }
+
+    @Override
+    public void onSuccess(List<Comment> list) {
+        rv.onRefreshComplete();
+        if (null != list && list.size() > 0){
+            mDatas.clear();
+            mDatas.addAll(list);
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onError(String error) {
+        rv.onRefreshComplete();
+        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
     }
 }
